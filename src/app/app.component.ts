@@ -15,6 +15,7 @@ import {
 })
 export class AppComponent implements OnInit, AfterViewInit {
 
+  public channels: any = [];
   constructor(private chatService: ChatClientService,
                      private streamService: StreamI18nService,
                      private channelService: ChannelService,
@@ -42,10 +43,19 @@ export class AppComponent implements OnInit, AfterViewInit {
       type: 'messaging',
       id: {$eq: 'talking-about-angular'},
     });
+    await this.getChannels();
+
   }
 
   ngAfterViewInit() {
     this.templateService.messageTemplate$.next(this.messageTemplate);
     this.templateService.channelPreviewTemplate$.next(this.channelPreviewTemplate);
+  }
+
+  async getChannels() {
+    const data = await this.chatService.chatClient.queryChannels({
+      type: 'messaging'
+    });
+    this.channels = data;
   }
 }

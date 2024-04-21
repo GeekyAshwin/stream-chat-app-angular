@@ -1,24 +1,23 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import {Component, Input, OnChanges, OnInit} from '@angular/core';
 import { Channel } from 'stream-chat';
-import { ChannelService, DefaultStreamChatGenerics } from 'stream-chat-angular';
+import {ChannelService, ChatClientService, DefaultStreamChatGenerics} from 'stream-chat-angular';
+import {NgForOf} from "@angular/common";
 
 @Component({
   selector: 'app-channel-preview',
   standalone: true,
-  imports: [],
-  template: `
-    <div class="container" (click)="setAsActiveChannel()">
-      <div>{{ channel?.data?.name || 'Unnamed Channel' }}</div>
-      <div class="preview">{{ messagePreview }}</div>
-    </div>
-  `,
+  imports: [
+    NgForOf
+  ],
+  templateUrl: './channel-preview.component.html',
   styles: ['.container {margin: 12px}', '.preview {font-size: 14px}'],
 })
-export class ChannelPreviewComponent implements OnChanges {
+export class ChannelPreviewComponent implements OnChanges, OnInit {
   @Input() channel: Channel<DefaultStreamChatGenerics> | undefined;
+  public channels: Channel<DefaultStreamChatGenerics>[] = [];
   messagePreview: string | undefined;
 
-  constructor(private channelService: ChannelService) {}
+  constructor(private channelService: ChannelService, private chatService: ChatClientService) {}
 
   ngOnChanges(): void {
     const messages = this?.channel?.state?.messages;
@@ -30,5 +29,33 @@ export class ChannelPreviewComponent implements OnChanges {
 
   setAsActiveChannel() {
     void this.channelService.setAsActiveChannel(this.channel!);
+  }
+
+  async createChannel() {
+    const channelId = 'best-friends';
+    const channelType = 'messaging';
+    const image = 'https://plus.unsplash.com/premium_photo-1669135330275-9f19f00245a6?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8YmVzdCUyMGZyaWVuZHN8ZW58MHx8MHx8fDA%3D';
+    const name: string = 'Best Friends 2024';
+
+    const channel = this.chatService.chatClient.channel(channelType, channelId, {
+      image: image,
+      name: name
+    });
+    await channel.create();
+
+    return 'Channel Created';
+  }
+
+  getChannels() {
+    this.chatService.chatClient.queryChannels({
+      type: 'messaging'
+    }).then((data) => {
+      this.channels = data;
+    });
+  }
+
+  ngOnInit(): void {
+    this.getChannels();
+    console.log(this.channels)
   }
 }

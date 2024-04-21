@@ -7,10 +7,17 @@ import {TranslateModule} from "@ngx-translate/core";
 import {StreamChatModule, StreamTextareaModule} from "stream-chat-angular";
 import {MessageComponent} from "./message/message.component";
 import {ChannelPreviewComponent} from "./channel-preview/channel-preview.component";
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import {ReactiveFormsModule} from "@angular/forms";
+import {ToastrModule} from "ngx-toastr";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    NavbarComponent,
+    SidebarComponent
   ],
   imports: [
     BrowserModule,
@@ -20,6 +27,9 @@ import {ChannelPreviewComponent} from "./channel-preview/channel-preview.compone
     StreamTextareaModule,
     MessageComponent,
     ChannelPreviewComponent,
+    ReactiveFormsModule,
+    ToastrModule.forRoot(),
+    BrowserAnimationsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
